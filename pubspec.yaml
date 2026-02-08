@@ -1,5 +1,5 @@
 name: dio_stub
-description: a starting point for Dart libraries or applications.
+description: a dio adapter that stubs requests without hitting the network, avoiding mocking entirely
 version: 1.0.0
 repository: https://github.com/lucavenir/dio_stub
 
