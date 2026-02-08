@@ -5,8 +5,8 @@ import "dart:typed_data";
 import "package:dio/dio.dart";
 
 /// defines how to respond to matched requests.
-sealed class Reply {
-  const Reply();
+sealed class DioStubReply {
+  const DioStubReply();
 
   /// replies with a JSON response.
   ///
@@ -14,10 +14,10 @@ sealed class Reply {
   /// **note** this takes precedence over any `content-type` you set in `headers`.
   ///
   /// ```dart
-  /// Reply.json({"id": 1, "name": "John"})
-  /// Reply.json({"error": "Not found"}, status: 404)
+  /// DioStubReply.json({"id": 1, "name": "John"})
+  /// DioStubReply.json({"error": "Not found"}, status: 404)
   /// ```
-  const factory Reply.json(
+  const factory DioStubReply.json(
     Object? data, {
     int status,
     Map<String, List<String>> headers,
@@ -29,12 +29,12 @@ sealed class Reply {
   /// **note** this takes precedence over any `content-type` you set in `headers`.
   ///
   /// ```dart
-  /// Reply.jsonWith((options, request) {
+  /// DioStubReply.jsonWith((options, request) {
   ///   final request = jsonDecode(utf8.decode(body ?? []));
   ///   return {"echoed": request};
   /// })
   /// ```
-  const factory Reply.jsonWith(
+  const factory DioStubReply.jsonWith(
     FutureOr<Object?> Function(RequestOptions options) callback, {
     int status,
     Map<String, List<String>> headers,
@@ -46,10 +46,10 @@ sealed class Reply {
   /// **note** this takes precedence over any `content-type` you set in `headers`.
   ///
   /// ```dart
-  /// Reply.text("OK")
-  /// Reply.text("Not Found", status: 404)
+  /// DioStubReply.text("OK")
+  /// DioStubReply.text("Not Found", status: 404)
   /// ```
-  const factory Reply.text(
+  const factory DioStubReply.text(
     String text, {
     int status,
     Map<String, List<String>> headers,
@@ -65,10 +65,10 @@ sealed class Reply {
   /// **note** `contentType` takes precedence over any `content-type` you set in `headers`.
   ///
   /// ```dart
-  /// Reply.bytes(pngBytes, contentType: "image/png")
-  /// Reply.bytes(pdfBytes, contentType: "application/pdf", headers: {"x-custom": ["value"]})
+  /// DioStubReply.bytes(pngBytes, contentType: "image/png")
+  /// DioStubReply.bytes(pdfBytes, contentType: "application/pdf", headers: {"x-custom": ["value"]})
   /// ```
-  const factory Reply.bytes(
+  const factory DioStubReply.bytes(
     Uint8List bytes, {
     required String contentType,
     int status,
@@ -81,7 +81,7 @@ sealed class Reply {
   /// you get full control over the response, including access to the request stream.
   ///
   /// ```dart
-  /// Reply.custom((options, requestStream) async {
+  /// DioStubReply.custom((options, requestStream) async {
   ///   final body = await requestStream?.fold<List<int>>(
   ///     [],
   ///     (acc, chunk) => acc..addAll(chunk),
@@ -93,7 +93,7 @@ sealed class Reply {
   ///   );
   /// })
   /// ```
-  const factory Reply.custom(
+  const factory DioStubReply.custom(
     Future<ResponseBody> Function(
       RequestOptions options,
       Stream<Uint8List>? requestStream,
@@ -107,7 +107,7 @@ sealed class Reply {
   );
 }
 
-final class JsonReply extends Reply {
+final class JsonReply extends DioStubReply {
   const JsonReply(this.data, {this.status = 200, this.headers = const {}});
   final Object? data;
   final int status;
@@ -129,7 +129,7 @@ final class JsonReply extends Reply {
   }
 }
 
-final class JsonWithReply extends Reply {
+final class JsonWithReply extends DioStubReply {
   const JsonWithReply(
     this.callback, {
     this.status = 200,
@@ -156,7 +156,7 @@ final class JsonWithReply extends Reply {
   }
 }
 
-final class TextReply extends Reply {
+final class TextReply extends DioStubReply {
   const TextReply(this.text, {this.status = 200, this.headers = const {}});
   final String text;
   final int status;
@@ -178,7 +178,7 @@ final class TextReply extends Reply {
   }
 }
 
-final class BytesReply extends Reply {
+final class BytesReply extends DioStubReply {
   const BytesReply(
     this.bytes, {
     required this.contentType,
@@ -206,7 +206,7 @@ final class BytesReply extends Reply {
   }
 }
 
-final class CustomReply extends Reply {
+final class CustomReply extends DioStubReply {
   const CustomReply(this.builder);
   final Future<ResponseBody> Function(
     RequestOptions options,

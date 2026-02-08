@@ -3,14 +3,14 @@ import "dart:typed_data";
 
 import "package:dio/dio.dart";
 import "package:dio_stub/dio_stub.dart";
-import "package:test/test.dart" hide Matcher;
+import "package:test/test.dart";
 
 void main() {
   final defaultOptions = RequestOptions(path: "/test");
 
-  group("Reply.json", () {
+  group("DioStubReply.json", () {
     test("encodes map as JSON bytes", () async {
-      const reply = Reply.json({"id": 1, "name": "Alice"});
+      const reply = DioStubReply.json({"id": 1, "name": "Alice"});
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -18,7 +18,7 @@ void main() {
     });
 
     test("encodes list as JSON bytes", () async {
-      const reply = Reply.json([1, 2, 3]);
+      const reply = DioStubReply.json([1, 2, 3]);
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -26,7 +26,7 @@ void main() {
     });
 
     test("encodes null as empty bytes", () async {
-      const reply = Reply.json(null);
+      const reply = DioStubReply.json(null);
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -34,21 +34,21 @@ void main() {
     });
 
     test("defaults to status 200", () async {
-      const reply = Reply.json({"ok": true});
+      const reply = DioStubReply.json({"ok": true});
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 200);
     });
 
     test("uses custom status code", () async {
-      const reply = Reply.json({"created": true}, status: 201);
+      const reply = DioStubReply.json({"created": true}, status: 201);
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 201);
     });
 
     test("sets content-type to application/json", () async {
-      const reply = Reply.json({"ok": true});
+      const reply = DioStubReply.json({"ok": true});
       final response = await reply.build(defaultOptions, null);
 
       expect(
@@ -58,7 +58,7 @@ void main() {
     });
 
     test("content-type overrides custom headers", () async {
-      const reply = Reply.json(
+      const reply = DioStubReply.json(
         {"ok": true},
         headers: {
           Headers.contentTypeHeader: ["text/plain"],
@@ -73,7 +73,7 @@ void main() {
     });
 
     test("preserves additional custom headers", () async {
-      const reply = Reply.json(
+      const reply = DioStubReply.json(
         {"ok": true},
         headers: {
           "x-request-id": ["abc-123"],
@@ -85,9 +85,9 @@ void main() {
     });
   });
 
-  group("Reply.jsonWith", () {
+  group("DioStubReply.jsonWith", () {
     test("builds response from callback", () async {
-      final reply = Reply.jsonWith((options) => {"path": options.path});
+      final reply = DioStubReply.jsonWith((options) => {"path": options.path});
       final options = RequestOptions(path: "/hello");
       final response = await reply.build(options, null);
       final body = await _readBody(response);
@@ -96,7 +96,7 @@ void main() {
     });
 
     test("supports async callback", () async {
-      final reply = Reply.jsonWith((options) async {
+      final reply = DioStubReply.jsonWith((options) async {
         return {"async": true};
       });
       final response = await reply.build(defaultOptions, null);
@@ -106,14 +106,14 @@ void main() {
     });
 
     test("uses custom status code", () async {
-      final reply = Reply.jsonWith((_) => null, status: 204);
+      final reply = DioStubReply.jsonWith((_) => null, status: 204);
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 204);
     });
 
     test("sets content-type to application/json", () async {
-      final reply = Reply.jsonWith((_) => {"ok": true});
+      final reply = DioStubReply.jsonWith((_) => {"ok": true});
       final response = await reply.build(defaultOptions, null);
 
       expect(
@@ -123,9 +123,9 @@ void main() {
     });
   });
 
-  group("Reply.text", () {
+  group("DioStubReply.text", () {
     test("encodes string as UTF-8 bytes", () async {
-      const reply = Reply.text("Hello, world!");
+      const reply = DioStubReply.text("Hello, world!");
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -133,7 +133,7 @@ void main() {
     });
 
     test("handles unicode text", () async {
-      const reply = Reply.text("Hej verden! \u{1F44B}");
+      const reply = DioStubReply.text("Hej verden! \u{1F44B}");
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -141,7 +141,7 @@ void main() {
     });
 
     test("handles empty string", () async {
-      const reply = Reply.text("");
+      const reply = DioStubReply.text("");
       final response = await reply.build(defaultOptions, null);
       final body = await _readBody(response);
 
@@ -149,21 +149,21 @@ void main() {
     });
 
     test("defaults to status 200", () async {
-      const reply = Reply.text("OK");
+      const reply = DioStubReply.text("OK");
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 200);
     });
 
     test("uses custom status code", () async {
-      const reply = Reply.text("Not Found", status: 404);
+      const reply = DioStubReply.text("Not Found", status: 404);
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 404);
     });
 
     test("sets content-type to text/plain", () async {
-      const reply = Reply.text("OK");
+      const reply = DioStubReply.text("OK");
       final response = await reply.build(defaultOptions, null);
 
       expect(
@@ -173,10 +173,10 @@ void main() {
     });
   });
 
-  group("Reply.bytes", () {
+  group("DioStubReply.bytes", () {
     test("returns raw bytes", () async {
       final bytes = Uint8List.fromList([0x89, 0x50, 0x4E, 0x47]);
-      final reply = Reply.bytes(bytes, contentType: "image/png");
+      final reply = DioStubReply.bytes(bytes, contentType: "image/png");
       final response = await reply.build(defaultOptions, null);
       final chunks = await response.stream.toList();
       final result = chunks.fold<List<int>>(
@@ -188,7 +188,7 @@ void main() {
     });
 
     test("sets content-type from parameter", () async {
-      final reply = Reply.bytes(
+      final reply = DioStubReply.bytes(
         Uint8List(0),
         contentType: "application/pdf",
       );
@@ -201,14 +201,14 @@ void main() {
     });
 
     test("defaults to status 200", () async {
-      final reply = Reply.bytes(Uint8List(0), contentType: "image/png");
+      final reply = DioStubReply.bytes(Uint8List(0), contentType: "image/png");
       final response = await reply.build(defaultOptions, null);
 
       expect(response.statusCode, 200);
     });
 
     test("uses custom status code", () async {
-      final reply = Reply.bytes(
+      final reply = DioStubReply.bytes(
         Uint8List(0),
         contentType: "image/png",
         status: 206,
@@ -219,9 +219,9 @@ void main() {
     });
   });
 
-  group("Reply.custom", () {
+  group("DioStubReply.custom", () {
     test("returns builder result directly", () async {
-      final reply = Reply.custom((options, requestStream) async {
+      final reply = DioStubReply.custom((options, requestStream) async {
         return ResponseBody.fromString("custom", 200);
       });
       final response = await reply.build(defaultOptions, null);
@@ -232,7 +232,7 @@ void main() {
     });
 
     test("receives request options", () async {
-      final reply = Reply.custom((options, requestStream) async {
+      final reply = DioStubReply.custom((options, requestStream) async {
         return ResponseBody.fromString(
           options.method,
           200,
@@ -249,7 +249,7 @@ void main() {
       final requestStream = Stream.value(
         Uint8List.fromList(utf8.encode("request body")),
       );
-      final reply = Reply.custom((options, stream) async {
+      final reply = DioStubReply.custom((options, stream) async {
         final chunks = await stream!.toList();
         final body = chunks.fold<List<int>>(
           [],

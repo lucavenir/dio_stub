@@ -17,12 +17,12 @@ import 'package:dio_stub/dio_stub.dart';
 // ... set-up
 final adapter = DioStub()
   ..on(
-    matcher: Matcher.path("/login", method: "POST"),
-    reply: Reply.json({"token": "abc"}, status: 201),
+    matcher: DioStubMatcher.path("/login", method: "POST"),
+    reply: DioStubReply.json({"token": "abc"}, status: 201),
   )
   ..on(
-    matcher: Matcher.path("/users"),
-    reply: Reply.json([{"id": 1}, {"id": 2}]),
+    matcher: DioStubMatcher.path("/users"),
+    reply: DioStubReply.json([{"id": 1}, {"id": 2}]),
   );
 
 final client = Dio();
@@ -40,17 +40,17 @@ of course, this becomes useful when you want to test an API that *depends* on `d
 you can tell the adapter to be evaluated, simply, by path (and optionally, also by method, by query parameters and by body):
 
 ```dart
-Matcher.path("/users")
-Matcher.path("/users", method: "POST")
-Matcher.path("/users", queryParameters: {"active": "true"})
-Matcher.path("/users", method: "POST", data: {"name": "Alice"})
+DioStubMatcher.path("/users")
+DioStubMatcher.path("/users", method: "POST")
+DioStubMatcher.path("/users", queryParameters: {"active": "true"})
+DioStubMatcher.path("/users", method: "POST", data: {"name": "Alice"})
 ```
 
 you can also exploit a custom callback that, given the requests options, will evaluate the adapter if that returns `true`
 
 ```dart
-Matcher.custom((options) => options.uri.path.startsWith("/api/v2/"))
-Matcher.custom((options) => RegExp(r"^/users/\d+$").hasMatch(options.uri.path))
+DioStubMatcher.custom((options) => options.uri.path.startsWith("/api/v2/"))
+DioStubMatcher.custom((options) => RegExp(r"^/users/\d+$").hasMatch(options.uri.path))
 ```
 
 ### replying
@@ -58,12 +58,12 @@ Matcher.custom((options) => RegExp(r"^/users/\d+$").hasMatch(options.uri.path))
 there's some built-in simple replies you can exploit, and there's also a `.custom` constructor that allows you to reply however you want!
 
 ```dart
-Reply.json({"key": "value"})                            // JSON with status 200
-Reply.json({"error": "not found"}, status: 404)         // JSON with custom status
-Reply.jsonWith((options) => {"path": options.path})     // dynamic JSON from request
-Reply.text("ok")                                        // plain text
-Reply.bytes(pngBytes, contentType: "image/png")         // raw bytes
-Reply.custom((options, requestStream) async { ... })    // full control
+DioStubReply.json({"key": "value"})                            // JSON with status 200
+DioStubReply.json({"error": "not found"}, status: 404)         // JSON with custom status
+DioStubReply.jsonWith((options) => {"path": options.path})     // dynamic JSON from request
+DioStubReply.text("ok")                                        // plain text
+DioStubReply.bytes(pngBytes, contentType: "image/png")         // raw bytes
+DioStubReply.custom((options, requestStream) async { ... })    // full control
 ```
 
 ### last override wins
@@ -77,16 +77,16 @@ late Dio dio;
 setUp(() {
   adapter = DioStub()
     ..on(
-      matcher: Matcher.path("/user"),
-      reply: Reply.json({"role": "user"}),
+      matcher: DioStubMatcher.path("/user"),
+      reply: DioStubReply.json({"role": "user"}),
     );
   dio = Dio()..httpClientAdapter = adapter;
 });
 
 test("admin override", () {
   adapter.on(
-    matcher: Matcher.path("/user"),
-    reply: Reply.json({"role": "admin"}), // wins
+    matcher: DioStubMatcher.path("/user"),
+    reply: DioStubReply.json({"role": "admin"}), // wins
   );
 
   final response = await dio.get("https://api.example.com/user");
@@ -160,8 +160,8 @@ final repository = Repository(dio: client);
 
 // ... in a test
 adapter.on(
-  matcher: Matcher.path("/users"),                      // when hitting /users..
-  reply: Reply.json([{"id": 1, "name": "Alice"}]),  // ..reply with a 200 ok json
+  matcher: DioStubMatcher.path("/users"),                      // when hitting /users..
+  reply: DioStubReply.json([{"id": 1, "name": "Alice"}]),  // ..reply with a 200 ok json
 );
 final users = await userRepository.getUsers();
 

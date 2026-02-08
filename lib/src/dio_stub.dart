@@ -11,16 +11,16 @@ import "reply.dart";
 /// ```dart
 /// final adapter = DioStub()
 ///   ..on(
-///     matcher: Matcher.path("/login", method: "POST"),
-///     reply: Reply.json({"token": "abc"}, status: 201),
+///     matcher: DioStubMatcher.path("/login", method: "POST"),
+///     reply: DioStubReply.json({"token": "abc"}, status: 201),
 ///   )
 ///   ..on(
-///     matcher: Matcher.path("/users"),
-///     reply: Reply.json([{"id": 1}, {"id": 2}]),
+///     matcher: DioStubMatcher.path("/users"),
+///     reply: DioStubReply.json([{"id": 1}, {"id": 2}]),
 ///   )
 ///   ..on(
-///     matcher: Matcher.custom((o) => o.path.startsWith("/v2/")),
-///     reply: Reply.json({"version": 2}),
+///     matcher: DioStubMatcher.custom((o) => o.path.startsWith("/v2/")),
+///     reply: DioStubReply.json({"version": 2}),
 ///   );
 ///
 /// final dio = Dio()..httpClientAdapter = adapter;
@@ -33,15 +33,15 @@ import "reply.dart";
 /// setUp(() {
 ///   adapter = DioStub()
 ///     ..on(
-///       matcher: Matcher.path("/user"),
-///       reply: Reply.json({"role": "user"}),
+///       matcher: DioStubMatcher.path("/user"),
+///       reply: DioStubReply.json({"role": "user"}),
 ///     );
 /// });
 ///
 /// test("admin user", () {
 ///   adapter.on(
-///     matcher: Matcher.path("/user"),
-///     reply: Reply.json({"role": "admin"}), // wins
+///     matcher: DioStubMatcher.path("/user"),
+///     reply: DioStubReply.json({"role": "admin"}), // wins
 ///   );
 /// });
 /// ```
@@ -49,7 +49,7 @@ class DioStub implements HttpClientAdapter {
   final List<_StubEntry> _stubs = [];
 
   /// register a stub with a matcher and reply.
-  void on({required Matcher matcher, required Reply reply}) {
+  void on({required DioStubMatcher matcher, required DioStubReply reply}) {
     _stubs.add(_StubEntry(matcher, reply));
   }
 
@@ -84,6 +84,6 @@ class DioStub implements HttpClientAdapter {
 
 class _StubEntry {
   _StubEntry(this.matcher, this.reply);
-  final Matcher matcher;
-  final Reply reply;
+  final DioStubMatcher matcher;
+  final DioStubReply reply;
 }

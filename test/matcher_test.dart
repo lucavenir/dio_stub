@@ -1,33 +1,33 @@
 import "package:dio/dio.dart";
 import "package:dio_stub/dio_stub.dart";
-import "package:test/test.dart" hide Matcher;
+import "package:test/test.dart";
 
 void main() {
-  group("Matcher.path", () {
+  group("DioStubMatcher.path", () {
     group("path matching", () {
       test("matches exact path", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
         final options = RequestOptions(path: "https://api.example.com/users");
 
         expect(matcher.matches(options), isTrue);
       });
 
       test("does not match different path", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
         final options = RequestOptions(path: "https://api.example.com/posts");
 
         expect(matcher.matches(options), isFalse);
       });
 
       test("normalizes path without leading slash", () {
-        const matcher = Matcher.path("users");
+        const matcher = DioStubMatcher.path("users");
         final options = RequestOptions(path: "https://api.example.com/users");
 
         expect(matcher.matches(options), isTrue);
       });
 
       test("matches nested paths", () {
-        const matcher = Matcher.path("/api/v1/users");
+        const matcher = DioStubMatcher.path("/api/v1/users");
         final options =
             RequestOptions(path: "https://api.example.com/api/v1/users");
 
@@ -35,7 +35,7 @@ void main() {
       });
 
       test("does not match partial paths", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
         final options =
             RequestOptions(path: "https://api.example.com/users/123");
 
@@ -45,7 +45,7 @@ void main() {
 
     group("method matching", () {
       test("matches any method when method is null", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
 
         expect(
           matcher.matches(
@@ -74,7 +74,7 @@ void main() {
       });
 
       test("matches specific method", () {
-        const matcher = Matcher.path("/users", method: "POST");
+        const matcher = DioStubMatcher.path("/users", method: "POST");
         final options = RequestOptions(
           path: "https://api.example.com/users",
           method: "POST",
@@ -84,7 +84,7 @@ void main() {
       });
 
       test("does not match wrong method", () {
-        const matcher = Matcher.path("/users", method: "POST");
+        const matcher = DioStubMatcher.path("/users", method: "POST");
         final options = RequestOptions(
           path: "https://api.example.com/users",
           method: "GET",
@@ -94,7 +94,7 @@ void main() {
       });
 
       test("matches method case-insensitively", () {
-        const matcher = Matcher.path("/users", method: "post");
+        const matcher = DioStubMatcher.path("/users", method: "post");
         final options = RequestOptions(
           path: "https://api.example.com/users",
           method: "POST",
@@ -106,7 +106,7 @@ void main() {
 
     group("query parameter matching", () {
       test("matches any query when queryParameters is null", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
         final options = RequestOptions(
           path: "https://api.example.com/users",
           queryParameters: {"active": "true"},
@@ -116,7 +116,7 @@ void main() {
       });
 
       test("matches exact query parameters", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           queryParameters: {"active": "true"},
         );
@@ -129,7 +129,7 @@ void main() {
       });
 
       test("does not match different query parameters", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           queryParameters: {"active": "true"},
         );
@@ -142,7 +142,7 @@ void main() {
       });
 
       test("does not match missing query parameters", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           queryParameters: {"active": "true"},
         );
@@ -152,7 +152,7 @@ void main() {
       });
 
       test("does not match extra query parameters", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           queryParameters: {"active": "true"},
         );
@@ -167,7 +167,7 @@ void main() {
 
     group("data matching", () {
       test("matches any data when data is null", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
         final options = RequestOptions(
           path: "https://api.example.com/users",
           data: {"name": "Alice"},
@@ -177,7 +177,7 @@ void main() {
       });
 
       test("matches exact map data (order-independent)", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           method: "POST",
           data: {"name": "Alice", "age": 30},
@@ -192,7 +192,7 @@ void main() {
       });
 
       test("does not match different map data", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           method: "POST",
           data: {"name": "Alice"},
@@ -207,7 +207,7 @@ void main() {
       });
 
       test("matches exact list data", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/bulk",
           method: "POST",
           data: [1, 2, 3],
@@ -222,7 +222,7 @@ void main() {
       });
 
       test("does not match list data in wrong order", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/bulk",
           method: "POST",
           data: [1, 2, 3],
@@ -237,7 +237,8 @@ void main() {
       });
 
       test("matches primitive data", () {
-        const matcher = Matcher.path("/echo", method: "POST", data: "hello");
+        const matcher =
+            DioStubMatcher.path("/echo", method: "POST", data: "hello");
         final options = RequestOptions(
           path: "https://api.example.com/echo",
           method: "POST",
@@ -248,7 +249,7 @@ void main() {
       });
 
       test("does not match when request data is null but expected is not", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           method: "POST",
           data: {"name": "Alice"},
@@ -264,37 +265,39 @@ void main() {
 
     group("toString", () {
       test("formats path only", () {
-        const matcher = Matcher.path("/users");
+        const matcher = DioStubMatcher.path("/users");
 
-        expect(matcher.toString(), 'Matcher.path("/users")');
+        expect(matcher.toString(), 'DioStubMatcher.path("/users")');
       });
 
       test("formats path with method", () {
-        const matcher = Matcher.path("/users", method: "POST");
+        const matcher = DioStubMatcher.path("/users", method: "POST");
 
-        expect(matcher.toString(), 'Matcher.path("/users", method: "POST")');
+        expect(matcher.toString(),
+            'DioStubMatcher.path("/users", method: "POST")');
       });
 
       test("formats path with query parameters", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           queryParameters: {"active": "true"},
         );
 
         expect(
           matcher.toString(),
-          'Matcher.path("/users", queryParameters: {active: true})',
+          'DioStubMatcher.path("/users", queryParameters: {active: true})',
         );
       });
 
       test("formats path with data", () {
-        const matcher = Matcher.path("/users", data: {"id": 1});
+        const matcher = DioStubMatcher.path("/users", data: {"id": 1});
 
-        expect(matcher.toString(), 'Matcher.path("/users", data: {id: 1})');
+        expect(
+            matcher.toString(), 'DioStubMatcher.path("/users", data: {id: 1})');
       });
 
       test("formats all fields", () {
-        const matcher = Matcher.path(
+        const matcher = DioStubMatcher.path(
           "/users",
           method: "POST",
           queryParameters: {"v": "2"},
@@ -303,16 +306,16 @@ void main() {
 
         expect(
           matcher.toString(),
-          'Matcher.path("/users", method: "POST", '
+          'DioStubMatcher.path("/users", method: "POST", '
           "queryParameters: {v: 2}, data: body)",
         );
       });
     });
   });
 
-  group("Matcher.custom", () {
+  group("DioStubMatcher.custom", () {
     test("matches when predicate returns true", () {
-      final matcher = Matcher.custom(
+      final matcher = DioStubMatcher.custom(
         (o) => o.path.startsWith("/api/"),
       );
       final options = RequestOptions(path: "/api/users");
@@ -321,7 +324,7 @@ void main() {
     });
 
     test("does not match when predicate returns false", () {
-      final matcher = Matcher.custom(
+      final matcher = DioStubMatcher.custom(
         (o) => o.path.startsWith("/api/"),
       );
       final options = RequestOptions(path: "/v2/users");
@@ -330,7 +333,7 @@ void main() {
     });
 
     test("can match with regex", () {
-      final matcher = Matcher.custom(
+      final matcher = DioStubMatcher.custom(
         (o) => RegExp(r"^/users/\d+$").hasMatch(o.uri.path),
       );
 
@@ -349,7 +352,7 @@ void main() {
     });
 
     test("can use method in predicate", () {
-      final matcher = Matcher.custom(
+      final matcher = DioStubMatcher.custom(
         (o) => o.method == "DELETE" && o.uri.path.startsWith("/users/"),
       );
 

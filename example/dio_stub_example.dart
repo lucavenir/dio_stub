@@ -7,15 +7,15 @@ import "package:dio_stub/dio_stub.dart";
 Future<void> main() async {
   final adapter = DioStub()
     ..on(
-      matcher: const Matcher.path("/users"),
-      reply: const Reply.json([
+      matcher: const DioStubMatcher.path("/users"),
+      reply: const DioStubReply.json([
         {"id": 1, "name": "Alice"},
         {"id": 2, "name": "Bob"},
       ]),
     )
     ..on(
-      matcher: const Matcher.path("/login", method: "POST"),
-      reply: const Reply.json({"token": "abc123"}, status: 201),
+      matcher: const DioStubMatcher.path("/login", method: "POST"),
+      reply: const DioStubReply.json({"token": "abc123"}, status: 201),
     );
 
   final dio = Dio()..httpClientAdapter = adapter;

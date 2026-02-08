@@ -2,7 +2,7 @@ import "dart:convert";
 
 import "package:dio/dio.dart";
 import "package:dio_stub/dio_stub.dart";
-import "package:test/test.dart" hide Matcher;
+import "package:test/test.dart";
 
 void main() {
   late DioStub adapter;
@@ -16,8 +16,8 @@ void main() {
   group("stub matching", () {
     test("returns response for matched stub", () async {
       adapter.on(
-        matcher: const Matcher.path("/users"),
-        reply: const Reply.json([
+        matcher: const DioStubMatcher.path("/users"),
+        reply: const DioStubReply.json([
           {"id": 1},
         ]),
       );
@@ -34,8 +34,8 @@ void main() {
 
     test("throws StateError when no stub matches", () async {
       adapter.on(
-        matcher: const Matcher.path("/users"),
-        reply: const Reply.json([]),
+        matcher: const DioStubMatcher.path("/users"),
+        reply: const DioStubReply.json([]),
       );
 
       expect(
@@ -52,8 +52,8 @@ void main() {
 
     test("error message includes request details", () async {
       adapter.on(
-        matcher: const Matcher.path("/users"),
-        reply: const Reply.json([]),
+        matcher: const DioStubMatcher.path("/users"),
+        reply: const DioStubReply.json([]),
       );
 
       try {
@@ -70,12 +70,12 @@ void main() {
     test("error message lists registered stubs", () async {
       adapter
         ..on(
-          matcher: const Matcher.path("/users"),
-          reply: const Reply.json([]),
+          matcher: const DioStubMatcher.path("/users"),
+          reply: const DioStubReply.json([]),
         )
         ..on(
-          matcher: const Matcher.path("/posts", method: "POST"),
-          reply: const Reply.json(null),
+          matcher: const DioStubMatcher.path("/posts", method: "POST"),
+          reply: const DioStubReply.json(null),
         );
 
       try {
@@ -83,10 +83,10 @@ void main() {
         fail("Should have thrown");
       } on DioException catch (e) {
         final error = e.error! as StateError;
-        expect(error.message, contains('Matcher.path("/users")'));
+        expect(error.message, contains('DioStubMatcher.path("/users")'));
         expect(
           error.message,
-          contains('Matcher.path("/posts", method: "POST")'),
+          contains('DioStubMatcher.path("/posts", method: "POST")'),
         );
       }
     });
@@ -96,12 +96,12 @@ void main() {
     test("last registered stub wins", () async {
       adapter
         ..on(
-          matcher: const Matcher.path("/users"),
-          reply: const Reply.json({"source": "first"}),
+          matcher: const DioStubMatcher.path("/users"),
+          reply: const DioStubReply.json({"source": "first"}),
         )
         ..on(
-          matcher: const Matcher.path("/users"),
-          reply: const Reply.json({"source": "second"}),
+          matcher: const DioStubMatcher.path("/users"),
+          reply: const DioStubReply.json({"source": "second"}),
         );
 
       final response = await dio.get<dynamic>(
@@ -113,13 +113,13 @@ void main() {
 
     test("test can override setUp stubs", () async {
       adapter.on(
-        matcher: const Matcher.path("/user"),
-        reply: const Reply.json({"role": "user"}),
+        matcher: const DioStubMatcher.path("/user"),
+        reply: const DioStubReply.json({"role": "user"}),
       );
 
       adapter.on(
-        matcher: const Matcher.path("/user"),
-        reply: const Reply.json({"role": "admin"}),
+        matcher: const DioStubMatcher.path("/user"),
+        reply: const DioStubReply.json({"role": "admin"}),
       );
 
       final response = await dio.get<dynamic>(
@@ -132,12 +132,12 @@ void main() {
     test("earlier stubs still match if later ones do not", () async {
       adapter
         ..on(
-          matcher: const Matcher.path("/users"),
-          reply: const Reply.json({"type": "list"}),
+          matcher: const DioStubMatcher.path("/users"),
+          reply: const DioStubReply.json({"type": "list"}),
         )
         ..on(
-          matcher: const Matcher.path("/posts"),
-          reply: const Reply.json({"type": "posts"}),
+          matcher: const DioStubMatcher.path("/posts"),
+          reply: const DioStubReply.json({"type": "posts"}),
         );
 
       final response = await dio.get<dynamic>(
@@ -151,8 +151,8 @@ void main() {
   group("HTTP methods", () {
     test("GET request", () async {
       adapter.on(
-        matcher: const Matcher.path("/data", method: "GET"),
-        reply: const Reply.json({"method": "GET"}),
+        matcher: const DioStubMatcher.path("/data", method: "GET"),
+        reply: const DioStubReply.json({"method": "GET"}),
       );
 
       final response = await dio.get<dynamic>(
@@ -164,8 +164,8 @@ void main() {
 
     test("POST request", () async {
       adapter.on(
-        matcher: const Matcher.path("/data", method: "POST"),
-        reply: const Reply.json({"method": "POST"}, status: 201),
+        matcher: const DioStubMatcher.path("/data", method: "POST"),
+        reply: const DioStubReply.json({"method": "POST"}, status: 201),
       );
 
       final response = await dio.post<dynamic>(
@@ -178,8 +178,8 @@ void main() {
 
     test("PUT request", () async {
       adapter.on(
-        matcher: const Matcher.path("/data/1", method: "PUT"),
-        reply: const Reply.json({"method": "PUT"}),
+        matcher: const DioStubMatcher.path("/data/1", method: "PUT"),
+        reply: const DioStubReply.json({"method": "PUT"}),
       );
 
       final response = await dio.put<dynamic>(
@@ -191,8 +191,8 @@ void main() {
 
     test("DELETE request", () async {
       adapter.on(
-        matcher: const Matcher.path("/data/1", method: "DELETE"),
-        reply: const Reply.json(null, status: 204),
+        matcher: const DioStubMatcher.path("/data/1", method: "DELETE"),
+        reply: const DioStubReply.json(null, status: 204),
       );
 
       final response = await dio.delete<dynamic>(
@@ -204,8 +204,8 @@ void main() {
 
     test("PATCH request", () async {
       adapter.on(
-        matcher: const Matcher.path("/data/1", method: "PATCH"),
-        reply: const Reply.json({"patched": true}),
+        matcher: const DioStubMatcher.path("/data/1", method: "PATCH"),
+        reply: const DioStubReply.json({"patched": true}),
       );
 
       final response = await dio.patch<dynamic>(
@@ -219,8 +219,8 @@ void main() {
   group("response types", () {
     test("JSON response", () async {
       adapter.on(
-        matcher: const Matcher.path("/json"),
-        reply: const Reply.json({"key": "value"}),
+        matcher: const DioStubMatcher.path("/json"),
+        reply: const DioStubReply.json({"key": "value"}),
       );
 
       final response = await dio.get<dynamic>(
@@ -232,8 +232,8 @@ void main() {
 
     test("text response", () async {
       adapter.on(
-        matcher: const Matcher.path("/text"),
-        reply: const Reply.text("Hello, world!"),
+        matcher: const DioStubMatcher.path("/text"),
+        reply: const DioStubReply.text("Hello, world!"),
       );
 
       final response = await dio.get<dynamic>(
@@ -246,8 +246,8 @@ void main() {
 
     test("dynamic JSON response", () async {
       adapter.on(
-        matcher: const Matcher.path("/echo", method: "POST"),
-        reply: Reply.jsonWith((options) => {"echoed": options.data}),
+        matcher: const DioStubMatcher.path("/echo", method: "POST"),
+        reply: DioStubReply.jsonWith((options) => {"echoed": options.data}),
       );
 
       final response = await dio.post<dynamic>(
@@ -262,11 +262,11 @@ void main() {
   group("query parameters", () {
     test("matches with query parameters", () async {
       adapter.on(
-        matcher: const Matcher.path(
+        matcher: const DioStubMatcher.path(
           "/search",
           queryParameters: {"q": "dart"},
         ),
-        reply: const Reply.json({"results": <dynamic>[]}),
+        reply: const DioStubReply.json({"results": <dynamic>[]}),
       );
 
       final response = await dio.get<dynamic>(
@@ -281,12 +281,12 @@ void main() {
   group("data matching", () {
     test("matches POST body", () async {
       adapter.on(
-        matcher: const Matcher.path(
+        matcher: const DioStubMatcher.path(
           "/login",
           method: "POST",
           data: {"username": "alice", "password": "secret"},
         ),
-        reply: const Reply.json({"token": "abc"}),
+        reply: const DioStubReply.json({"token": "abc"}),
       );
 
       final response = await dio.post<dynamic>(
@@ -309,25 +309,25 @@ void main() {
     test("CRUD flow", () async {
       adapter
         ..on(
-          matcher: const Matcher.path("/items"),
-          reply: const Reply.json([
+          matcher: const DioStubMatcher.path("/items"),
+          reply: const DioStubReply.json([
             {"id": 1, "name": "Item 1"},
           ]),
         )
         ..on(
-          matcher: const Matcher.path("/items", method: "POST"),
-          reply: const Reply.json(
+          matcher: const DioStubMatcher.path("/items", method: "POST"),
+          reply: const DioStubReply.json(
             {"id": 2, "name": "Item 2"},
             status: 201,
           ),
         )
         ..on(
-          matcher: const Matcher.path("/items/2", method: "PUT"),
-          reply: const Reply.json({"id": 2, "name": "Updated"}),
+          matcher: const DioStubMatcher.path("/items/2", method: "PUT"),
+          reply: const DioStubReply.json({"id": 2, "name": "Updated"}),
         )
         ..on(
-          matcher: const Matcher.path("/items/2", method: "DELETE"),
-          reply: const Reply.json(null, status: 204),
+          matcher: const DioStubMatcher.path("/items/2", method: "DELETE"),
+          reply: const DioStubReply.json(null, status: 204),
         );
 
       final list = await dio.get<dynamic>("https://api.example.com/items");
@@ -356,10 +356,10 @@ void main() {
 
     test("custom matcher with jsonWith reply", () async {
       adapter.on(
-        matcher: Matcher.custom(
+        matcher: DioStubMatcher.custom(
           (o) => o.uri.path.startsWith("/api/v2/"),
         ),
-        reply: Reply.jsonWith((options) {
+        reply: DioStubReply.jsonWith((options) {
           final segment = options.uri.pathSegments.last;
           return {"resource": segment, "version": 2};
         }),
@@ -374,8 +374,8 @@ void main() {
 
     test("custom reply with request stream access", () async {
       adapter.on(
-        matcher: const Matcher.path("/upload", method: "POST"),
-        reply: Reply.custom((options, requestStream) async {
+        matcher: const DioStubMatcher.path("/upload", method: "POST"),
+        reply: DioStubReply.custom((options, requestStream) async {
           final chunks = await requestStream?.toList() ?? [];
           final bytes = chunks.fold<List<int>>(
             [],

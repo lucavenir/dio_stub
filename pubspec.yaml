@@ -1,6 +1,6 @@
 name: dio_stub
 description: a dio adapter that stubs requests without hitting the network, avoiding mocking entirely
-version: 0.0.2
+version: 1.1.0
 repository: https://github.com/lucavenir/dio_stub
 
 environment:

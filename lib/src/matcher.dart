@@ -2,24 +2,24 @@ import "package:collection/collection.dart";
 import "package:dio/dio.dart";
 
 /// defines how to match incoming requests.
-sealed class Matcher {
-  const Matcher();
+sealed class DioStubMatcher {
+  const DioStubMatcher();
 
   /// match requests with an exact path (and optionally a specific HTTP method).
   ///
   /// ```dart
-  /// Matcher.path("/users")              // matches any method
-  /// Matcher.path("/users", method: "GET")  // matches only GET
-  /// Matcher.path("/users", queryParameters: {"active": "true"})  // matches if query parameters match
-  /// Matcher.path("/users", data: {"id": 1})  // matches only if data matches
+  /// DioStubMatcher.path("/users")              // matches any method
+  /// DioStubMatcher.path("/users", method: "GET")  // matches only GET
+  /// DioStubMatcher.path("/users", queryParameters: {"active": "true"})  // matches if query parameters match
+  /// DioStubMatcher.path("/users", data: {"id": 1})  // matches only if data matches
   /// ```
   ///
   /// the path is normalized: a leading "/" is added if missing, and any scheme/host
-  /// prefix is stripped. so `Matcher.path("/users")` will match requests to
+  /// prefix is stripped. so `DioStubMatcher.path("/users")` will match requests to
   /// `https://api.example.com/users`.
   ///
   /// query parameters in the URL are matched separately via `queryParameters`.
-  const factory Matcher.path(
+  const factory DioStubMatcher.path(
     String path, {
     String? method,
     Map<String, dynamic>? queryParameters,
@@ -29,10 +29,10 @@ sealed class Matcher {
   /// match requests using a custom predicate.
   ///
   /// ```dart
-  /// Matcher.custom((o) => o.path.startsWith("/api/"))
-  /// Matcher.custom((o) => RegExp(r"^/users/\d+$").hasMatch(o.path))
+  /// DioStubMatcher.custom((o) => o.path.startsWith("/api/"))
+  /// DioStubMatcher.custom((o) => RegExp(r"^/users/\d+$").hasMatch(o.path))
   /// ```
-  const factory Matcher.custom(
+  const factory DioStubMatcher.custom(
     bool Function(RequestOptions options) predicate,
   ) = CustomMatcher;
 
@@ -40,7 +40,7 @@ sealed class Matcher {
   bool matches(RequestOptions options);
 }
 
-final class PathMatcher extends Matcher {
+final class PathMatcher extends DioStubMatcher {
   const PathMatcher(this.path, {this.method, this.queryParameters, this.data});
   final String path;
   final String? method;
@@ -100,7 +100,7 @@ final class PathMatcher extends Matcher {
 
   @override
   String toString() {
-    final buffer = StringBuffer('Matcher.path("$path"');
+    final buffer = StringBuffer('DioStubMatcher.path("$path"');
     if (method != null) {
       buffer.write(', method: "$method"');
     }
@@ -117,7 +117,7 @@ final class PathMatcher extends Matcher {
 
 /// custom matcher for advanced use cases where the built-in matchers aren't sufficient;
 /// the predicate follows closely the structure of a [HttpClientAdapter] fetch method
-final class CustomMatcher extends Matcher {
+final class CustomMatcher extends DioStubMatcher {
   const CustomMatcher(this.predicate);
   final bool Function(RequestOptions options) predicate;
 
@@ -125,5 +125,5 @@ final class CustomMatcher extends Matcher {
   bool matches(RequestOptions options) => predicate(options);
 
   @override
-  String toString() => "Matcher.custom($predicate)";
+  String toString() => "DioStubMatcher.custom($predicate)";
 }
