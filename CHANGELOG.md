@@ -1,3 +1,3 @@
 ## 1.0.0
 
-- Initial version.
+- initial version, fully working, fully documented

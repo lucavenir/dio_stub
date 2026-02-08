@@ -1,15 +1,16 @@
 name: dio_stub
-description: A starting point for Dart libraries or applications.
+description: a starting point for Dart libraries or applications.
 version: 1.0.0
-# repository: https://github.com/my_org/my_repo
+repository: https://github.com/lucavenir/dio_stub
 
 environment:
-  sdk: ^3.10.7
+  sdk: ^3.6.0
 
-# Add regular dependencies here.
 dependencies:
-  # path: ^1.9.0
+  collection: ^1.19.1
+  dio: ^5.9.1
 
 dev_dependencies:
   lints: ^6.0.0
   test: ^1.25.6
+  very_good_analysis: ^10.1.0

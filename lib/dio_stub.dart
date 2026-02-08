@@ -1,8 +1,6 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
+/// a fake Dio HTTP client adapter for testing without mocking.
 library;
 
-export 'src/dio_stub_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export "src/dio_stub.dart";
+export "src/matcher.dart";
+export "src/reply.dart";
