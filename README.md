@@ -1,3 +1,11 @@
+# archiving notice
+
+this repository is archived - why?
+
+we're moving stuff to codeberg.
+
+you'll find this repository, maintained, updated, fresh, [here](https://codeberg.org/lucavenir/dio_stub).
+
 # dio_stub
 
 a Dio HTTP client adapter for tests that care about behavior, not implementation.
